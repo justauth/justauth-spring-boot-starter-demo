@@ -1,0 +1,11 @@
+justauth:
+  enabled: true
+  type:
+    QQ:
+      client-id: 10**********6
+      client-secret: 1f7d08**********5b7**********29e
+      redirect-uri: http://oauth.xkcoding.com/demo/oauth/qq/callback
+server:
+  port: 8080
+  servlet:
+    context-path: /demo
