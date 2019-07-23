@@ -16,6 +16,7 @@
 
   <properties>
     <java.version>1.8</java.version>
+    <justauth-spring-boot-starter.version>0.0.2-SNAPSHOT</justauth-spring-boot-starter.version>
   </properties>
 
   <dependencies>
@@ -33,7 +34,7 @@
     <dependency>
       <groupId>com.xkcoding</groupId>
       <artifactId>justauth-spring-boot-starter</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>${justauth-spring-boot-starter.version}</version>
     </dependency>
   </dependencies>
 

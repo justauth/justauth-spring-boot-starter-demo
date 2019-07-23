@@ -1,5 +1,6 @@
 package com.xkcoding.justauthspringbootstarterdemo;
 
+import cn.hutool.core.lang.Dict;
 import com.xkcoding.justauth.AuthRequestFactory;
 import lombok.RequiredArgsConstructor;
 import me.zhyd.oauth.config.AuthSource;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * <p>
@@ -31,14 +33,20 @@ public class TestController {
 
     @GetMapping("/login/qq")
     public void login(HttpServletResponse response) throws IOException {
-        AuthRequest authRequest = factory.get(AuthSource.QQ);
+        AuthRequest authRequest = factory.get(AuthSource.QQ, Dict.create().set("id", "xkcoding"));
         response.sendRedirect(authRequest.authorize());
     }
 
     @RequestMapping("/qq/callback")
     public AuthResponse login(AuthCallback callback) {
-        AuthRequest authRequest = factory.get(AuthSource.QQ);
-        AuthResponse response = authRequest.login(callback);
+        // 第一种方式获取request
+        //body => {"id":"xkcoding"}
+        Map body = AuthState.getBody(AuthSource.QQ, AuthState.get(AuthSource.QQ), Map.class);
+        AuthRequest authRequest1 = factory.get(AuthSource.QQ, body);
+        // 第二种方式获取request，和第一种结果是一样的
+        AuthRequest authRequest2 = factory.get(AuthSource.QQ);
+
+        AuthResponse response = authRequest2.login(callback);
         // 移除校验通过的state
         AuthState.delete(AuthSource.QQ);
         return response;
