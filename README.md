@@ -4,38 +4,13 @@
 
 ## 快速开始
 
-- 因为暂时没有发布至中央仓库，因此需要体验的童鞋暂时使用我的私服玩儿吧~ 在 `pom.xml` 中添加以下内容
-
-```xml
-<repositories>
-  <!--阿里云私服-->
-  <repository>
-    <id>aliyun</id>
-    <name>aliyun</name>
-    <url>http://maven.aliyun.com/nexus/content/groups/public</url>
-  </repository>
-  <!--xkcoding 私服-->
-  <repository>
-    <id>xkcoding-nexus</id>
-    <name>xkcoding nexus</name>
-    <url>https://nexus.xkcoding.com/repository/maven-public/</url>
-    <releases>
-      <enabled>true</enabled>
-    </releases>
-    <snapshots>
-      <enabled>true</enabled>
-    </snapshots>
-  </repository>
-</repositories>
-```
-
 - 引用依赖
 
 ```xml
 <dependency>
   <groupId>com.xkcoding</groupId>
   <artifactId>justauth-spring-boot-starter</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2</version>
 </dependency>
 ```
 
@@ -56,13 +31,15 @@ justauth:
 ```java
 package com.xkcoding.justauthspringbootstarterdemo;
 
+import cn.hutool.json.JSONUtil;
 import com.xkcoding.justauth.AuthRequestFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.config.AuthSource;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.request.AuthRequest;
-import me.zhyd.oauth.utils.AuthState;
+import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -79,6 +56,7 @@ import java.io.IOException;
  * @author yangkai.shen
  * @date Created in 2019-07-22 11:17
  */
+@Slf4j
 @RestController
 @RequestMapping("/oauth")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -88,15 +66,14 @@ public class TestController {
     @GetMapping("/login/qq")
     public void login(HttpServletResponse response) throws IOException {
         AuthRequest authRequest = factory.get(AuthSource.QQ);
-        response.sendRedirect(authRequest.authorize());
+        response.sendRedirect(authRequest.authorize(AuthStateUtils.createState()));
     }
 
     @RequestMapping("/qq/callback")
     public AuthResponse login(AuthCallback callback) {
-        AuthRequest authRequest = factory.get(AuthSource.QQ);
-        AuthResponse response = authRequest.login(callback);
-        // 移除校验通过的state
-        AuthState.delete(AuthSource.QQ);
+        AuthRequest authRequest2 = factory.get(AuthSource.QQ);
+        AuthResponse response = authRequest2.login(callback);
+        log.info("【response】= {}", JSONUtil.toJsonStr(response));
         return response;
     }
 }
