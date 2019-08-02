@@ -40,8 +40,8 @@ public class TestController {
 
     @RequestMapping("/qq/callback")
     public AuthResponse login(AuthCallback callback) {
-        AuthRequest authRequest2 = factory.get(AuthSource.QQ);
-        AuthResponse response = authRequest2.login(callback);
+        AuthRequest authRequest = factory.get(AuthSource.QQ);
+        AuthResponse response = authRequest.login(callback);
         log.info("【response】= {}", JSONUtil.toJsonStr(response));
         return response;
     }
