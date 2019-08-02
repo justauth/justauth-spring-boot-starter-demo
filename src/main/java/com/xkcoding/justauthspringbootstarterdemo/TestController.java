@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * <p>
@@ -31,6 +32,11 @@ import java.io.IOException;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class TestController {
     private final AuthRequestFactory factory;
+
+    @GetMapping
+    public List<String> list() {
+        return factory.oauthList();
+    }
 
     @GetMapping("/login/qq")
     public void login(HttpServletResponse response) throws IOException {
