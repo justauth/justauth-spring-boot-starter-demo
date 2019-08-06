@@ -5,6 +5,11 @@ justauth:
       client-id: 10**********6
       client-secret: 1f7d08**********5b7**********29e
       redirect-uri: http://oauth.xkcoding.com/demo/oauth/qq/callback
+    WECHAT_ENTERPRISE:
+      client-id: ww58**********6fbc
+      client-secret: 8G6PCr0****************************yzaPc78
+      redirect-uri: http://oauth.xkcoding.com/demo/oauth/wechat_enterprise/callback
+      agent-id: 10*******02
 server:
   port: 8080
   servlet:
