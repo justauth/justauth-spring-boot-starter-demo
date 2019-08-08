@@ -58,7 +58,7 @@ public class TestController {
         if (StrUtil.isNotBlank(type)) {
             return AuthSource.valueOf(type.toUpperCase());
         } else {
-            return null;
+            throw new RuntimeException("不支持的类型");
         }
     }
 }

@@ -16,7 +16,7 @@
 
   <properties>
     <java.version>1.8</java.version>
-    <justauth-spring-boot-starter.version>0.0.3-SNAPSHOT</justauth-spring-boot-starter.version>
+    <justauth-spring-boot-starter.version>1.0.0</justauth-spring-boot-starter.version>
   </properties>
 
   <dependencies>
