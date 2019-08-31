@@ -1,24 +1,16 @@
 package com.xkcoding.justauthspringbootstarterdemo;
 
-import lombok.RequiredArgsConstructor;
 import me.zhyd.oauth.cache.AuthStateCache;
-import org.springframework.data.redis.core.RedisTemplate;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
- * Redis作为JustAuth的State的缓存
+ * 自定义缓存实现
  * </p>
  *
  * @author yangkai.shen
- * @date Created in 2019-08-02 15:10
+ * @date Created in 2019/8/31 12:53
  */
-@RequiredArgsConstructor
-public class RedisStateCache implements AuthStateCache {
-    private final RedisTemplate<String, String> redisTemplate;
-    private static final long DEF_TIMEOUT = 3 * 60 * 1000;
-
+public class MyAuthStateCache implements AuthStateCache {
     /**
      * 存入缓存
      *
@@ -27,7 +19,7 @@ public class RedisStateCache implements AuthStateCache {
      */
     @Override
     public void cache(String key, String value) {
-        this.cache(key, value, DEF_TIMEOUT);
+        // TODO: 自定义存入缓存
     }
 
     /**
@@ -39,7 +31,7 @@ public class RedisStateCache implements AuthStateCache {
      */
     @Override
     public void cache(String key, String value, long timeout) {
-        redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.MILLISECONDS);
+        // TODO: 自定义存入缓存
     }
 
     /**
@@ -50,7 +42,8 @@ public class RedisStateCache implements AuthStateCache {
      */
     @Override
     public String get(String key) {
-        return redisTemplate.opsForValue().get(key);
+        // TODO: 自定义获取缓存内容
+        return null;
     }
 
     /**
@@ -61,10 +54,7 @@ public class RedisStateCache implements AuthStateCache {
      */
     @Override
     public boolean containsKey(String key) {
-        Long expire = redisTemplate.getExpire(key, TimeUnit.MILLISECONDS);
-        if (expire == null) {
-            expire = 0L;
-        }
-        return expire > 0;
+        // TODO: 自定义判断key是否存在
+        return false;
     }
 }

@@ -9,7 +9,11 @@ justauth:
       client-id: ww58**********6fbc
       client-secret: 8G6PCr0****************************yzaPc78
       redirect-uri: http://oauth.xkcoding.com/demo/oauth/wechat_enterprise/callback
-      agent-id: 10*******02
+      agent-id: 1000002
+  cache:
+    type: custom
+    prefix: 'demo::'
+    timeout: 1h
 server:
   port: 8080
   servlet:
@@ -34,3 +38,6 @@ spring:
   cache:
     # 一般来说是不用配置的，Spring Cache 会根据依赖的包自行装配
     type: redis
+logging:
+  level:
+    com.xkcoding: debug
