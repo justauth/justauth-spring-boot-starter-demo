@@ -1,5 +1,13 @@
 justauth:
   enabled: true
+  extend:
+    enum-class: com.xkcoding.justauthspringbootstarterdemo.extend.ExtendSource
+    config:
+      TEST:
+        request-class: com.xkcoding.justauthspringbootstarterdemo.extend.ExtendTestRequest
+        client-id: xxxxxx
+        client-secret: xxxxxxxx
+        redirect-uri: http://oauth.xkcoding.com/demo/oauth/test/callback
   type:
     QQ:
       client-id: 10**********6
@@ -11,7 +19,7 @@ justauth:
       redirect-uri: http://oauth.xkcoding.com/demo/oauth/wechat_enterprise/callback
       agent-id: 1000002
   cache:
-    type: custom
+    type: default
     prefix: 'demo::'
     timeout: 1h
 server:

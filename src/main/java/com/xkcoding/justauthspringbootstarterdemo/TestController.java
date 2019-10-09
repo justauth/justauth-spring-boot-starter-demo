@@ -1,11 +1,9 @@
 package com.xkcoding.justauthspringbootstarterdemo;
 
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.xkcoding.justauth.AuthRequestFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.zhyd.oauth.config.AuthSource;
 import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.request.AuthRequest;
@@ -42,23 +40,16 @@ public class TestController {
 
     @GetMapping("/login/{type}")
     public void login(@PathVariable String type, HttpServletResponse response) throws IOException {
-        AuthRequest authRequest = factory.get(getAuthSource(type));
+        AuthRequest authRequest = factory.get(type);
         response.sendRedirect(authRequest.authorize(AuthStateUtils.createState()));
     }
 
     @RequestMapping("/{type}/callback")
     public AuthResponse login(@PathVariable String type, AuthCallback callback) {
-        AuthRequest authRequest = factory.get(getAuthSource(type));
+        AuthRequest authRequest = factory.get(type);
         AuthResponse response = authRequest.login(callback);
         log.info("【response】= {}", JSONUtil.toJsonStr(response));
         return response;
     }
 
-    private AuthSource getAuthSource(String type) {
-        if (StrUtil.isNotBlank(type)) {
-            return AuthSource.valueOf(type.toUpperCase());
-        } else {
-            throw new RuntimeException("不支持的类型");
-        }
-    }
 }
