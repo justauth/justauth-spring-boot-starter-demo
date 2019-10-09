@@ -12,7 +12,7 @@
 <dependency>
   <groupId>com.xkcoding</groupId>
   <artifactId>justauth-spring-boot-starter</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
 </dependency>
 ```
 
@@ -47,25 +47,18 @@ public class TestController {
 
     @GetMapping("/login/{type}")
     public void login(@PathVariable String type, HttpServletResponse response) throws IOException {
-        AuthRequest authRequest = factory.get(getAuthSource(type));
+        AuthRequest authRequest = factory.get(type);
         response.sendRedirect(authRequest.authorize(AuthStateUtils.createState()));
     }
 
     @RequestMapping("/{type}/callback")
     public AuthResponse login(@PathVariable String type, AuthCallback callback) {
-        AuthRequest authRequest = factory.get(getAuthSource(type));
+        AuthRequest authRequest = factory.get(type);
         AuthResponse response = authRequest.login(callback);
         log.info("【response】= {}", JSONUtil.toJsonStr(response));
         return response;
     }
 
-    private AuthSource getAuthSource(String type) {
-        if (StrUtil.isNotBlank(type)) {
-            return AuthSource.valueOf(type.toUpperCase());
-        } else {
-            throw new RuntimeException("不支持的类型");
-        }
-    }
 }
 ```
 
@@ -222,6 +215,163 @@ public class AuthStateConfiguration {
 }
 ```
 
+### 3. 自定义第三方平台配置
+
+1.创建自定义的平台枚举类
+
+```java
+/**
+ * <p>
+ * 扩展的自定义 source
+ * </p>
+ *
+ * @author yangkai.shen
+ * @date Created in 2019/10/9 14:14
+ */
+public enum ExtendSource implements AuthSource {
+
+    /**
+     * 测试
+     */
+    TEST {
+        /**
+         * 授权的api
+         *
+         * @return url
+         */
+        @Override
+        public String authorize() {
+            return "http://authorize";
+        }
+
+        /**
+         * 获取accessToken的api
+         *
+         * @return url
+         */
+        @Override
+        public String accessToken() {
+            return "http://accessToken";
+        }
+
+        /**
+         * 获取用户信息的api
+         *
+         * @return url
+         */
+        @Override
+        public String userInfo() {
+            return null;
+        }
+
+        /**
+         * 取消授权的api
+         *
+         * @return url
+         */
+        @Override
+        public String revoke() {
+            return null;
+        }
+
+        /**
+         * 刷新授权的api
+         *
+         * @return url
+         */
+        @Override
+        public String refresh() {
+            return null;
+        }
+    }
+}
+```
+
+2.创建自定义的请求处理
+
+```java
+/**
+ * <p>
+ * 测试用自定义扩展的第三方request
+ * </p>
+ *
+ * @author yangkai.shen
+ * @date Created in 2019/10/9 14:19
+ */
+public class ExtendTestRequest extends AuthDefaultRequest {
+
+    public ExtendTestRequest(AuthConfig config) {
+        super(config, ExtendSource.TEST);
+    }
+
+    public ExtendTestRequest(AuthConfig config, AuthStateCache authStateCache) {
+        super(config, ExtendSource.TEST, authStateCache);
+    }
+
+    /**
+     * 获取access token
+     *
+     * @param authCallback 授权成功后的回调参数
+     * @return token
+     * @see AuthDefaultRequest#authorize()
+     * @see AuthDefaultRequest#authorize(String)
+     */
+    @Override
+    protected AuthToken getAccessToken(AuthCallback authCallback) {
+        return AuthToken.builder().openId("openId").expireIn(1000).idToken("idToken").scope("scope").refreshToken("refreshToken").accessToken("accessToken").code("code").build();
+    }
+
+    /**
+     * 使用token换取用户信息
+     *
+     * @param authToken token信息
+     * @return 用户信息
+     * @see AuthDefaultRequest#getAccessToken(AuthCallback)
+     */
+    @Override
+    protected AuthUser getUserInfo(AuthToken authToken) {
+        return AuthUser.builder().username("test").nickname("test").gender(AuthUserGender.MALE).token(authToken).source(this.source.toString()).build();
+    }
+
+    /**
+     * 撤销授权
+     *
+     * @param authToken 登录成功后返回的Token信息
+     * @return AuthResponse
+     */
+    @Override
+    public AuthResponse revoke(AuthToken authToken) {
+        return AuthResponse.builder().code(AuthResponseStatus.SUCCESS.getCode()).msg(AuthResponseStatus.SUCCESS.getMsg()).build();
+    }
+
+    /**
+     * 刷新access token （续期）
+     *
+     * @param authToken 登录成功后返回的Token信息
+     * @return AuthResponse
+     */
+    @Override
+    public AuthResponse refresh(AuthToken authToken) {
+        return AuthResponse.builder().code(AuthResponseStatus.SUCCESS.getCode()).data(AuthToken.builder().openId("openId").expireIn(1000).idToken("idToken").scope("scope").refreshToken("refreshToken").accessToken("accessToken").code("code").build()).build();
+    }
+}
+```
+
+3.在配置文件配置相关信息
+
+```yaml
+justauth:
+  enabled: true
+  extend:
+    enum-class: com.xkcoding.justauthspringbootstarterdemo.extend.ExtendSource
+    config:
+      TEST:
+        request-class: com.xkcoding.justauthspringbootstarterdemo.extend.ExtendTestRequest
+        client-id: xxxxxx
+        client-secret: xxxxxxxx
+        redirect-uri: http://oauth.xkcoding.com/demo/oauth/test/callback
+```
+
 ## 附录
 
 ### 1. 基础配置
@@ -249,9 +399,23 @@ public class AuthStateConfiguration {
 | `justauth.cache.prefix`  | `string`                                                     | JUSTAUTH::STATE:: |                      | 缓存前缀，目前只对redis缓存生效，默认 JUSTAUTH::STATE::      |
 | `justauth.cache.timeout` | `java.time.Duration`                                         | 3分钟             |                      | 超时时长，目前只对redis缓存生效，默认3分钟                   |
 
+`justauth.extend` 配置列表
+
+| 属性名                       | 类型                                         | 默认值 | 可选项 | 描述         |
+| ---------------------------- | -------------------------------------------- | ------ | ------ | ------------ |
+| `justauth.extend.enum-class` | `Class<? extends AuthSource>`                | 无     |        | 枚举类全路径 |
+| `justauth.extend.config`     | `java.util.Map<String, ExtendRequestConfig>` | 无     |        | 对应配置信息 |
+
+ `justauth.extend.config` 配置列表
+
+| 属性名                          | 类型                                                         | 默认值 | 可选项 | 描述                                                         |
+| ------------------------------- | ------------------------------------------------------------ | ------ | ------ | ------------------------------------------------------------ |
+| `justauth.extend.config.keys`   | `java.lang.String`                                           | 无     |        | key 必须在 `justauth.extend.enum-class` 配置的枚举类中声明   |
+| `justauth.extend.config.values` | `com.xkcoding.justauth.autoconfigure.ExtendProperties.ExtendRequestConfig` | 无     |        | value 就是 `AuthConfig` 的子类，增加了一个 `request-class` 属性配置请求的全类名，具体参考类[`ExtendProperties.ExtendRequestConfig`](https://github.com/justauth/justauth-spring-boot-starter/blob/master/src/main/java/com/xkcoding/justauth/autoconfigure/ExtendProperties.java#L49-L54) |
+
 ### 2. SNAPSHOT版本
 
-如果需要体验快照版本，可以在你的 `pom.xml` 进行如下配置：
+![https://img.shields.io/badge/snapshots-1.2.0--SNAPSHOT-green](https://img.shields.io/badge/snapshots-1.2.0--SNAPSHOT-green)如果需要体验快照版本，可以在你的 `pom.xml`进行如下配置：
 
 ```xml
 <repositories>
@@ -263,8 +427,8 @@ public class AuthStateConfiguration {
     </repository>
     <!--中央仓库-->
     <repository>
-      <id>xkcoding-nexus</id>
-      <name>xkcoding nexus</name>
+      <id>oss</id>
+      <name>oss</name>
       <url>http://oss.sonatype.org/content/repositories/snapshots</url>
       <releases>
         <enabled>true</enabled>
@@ -275,4 +439,3 @@ public class AuthStateConfiguration {
     </repository>
 </repositories>
 ```
-
