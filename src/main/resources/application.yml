@@ -8,6 +8,12 @@ justauth:
         client-id: xxxxxx
         client-secret: xxxxxxxx
         redirect-uri: http://oauth.xkcoding.com/demo/oauth/test/callback
+      WEB_ENTERPRISE_WE_CHAT:
+        request-class: com.xkcoding.justauthspringbootstarterdemo.extend.WebEnterpriseWeChatRequest
+        client-id: ww58**********6fbc
+        client-secret: 8G6PCr0****************************yzaPc78
+        redirect-uri: http://oauth.xkcoding.com/demo/oauth/web_enterprise_we_chat/callback
+        agent-id: 1000002
   type:
     QQ:
       client-id: 10**********6
