@@ -24,6 +24,10 @@ justauth:
       client-secret: 8G6PCr0****************************yzaPc78
       redirect-uri: http://oauth.xkcoding.com/demo/oauth/wechat_enterprise/callback
       agent-id: 1000002
+    DINGTALK:
+      client-id: ding*************cl3
+      client-secret: fz_NeJh9S***************************************XduEx4nyG8ZFiMD
+      redirect-uri: http://oauth.xkcoding.com/demo/oauth/dingtalk/callback
   cache:
     type: default
     prefix: 'demo::'
