@@ -19,6 +19,10 @@ justauth:
       client-id: 10**********6
       client-secret: 1f7d08**********5b7**********29e
       redirect-uri: http://oauth.xkcoding.com/demo/oauth/qq/callback
+    WECHAT_MP:
+      client-id: wx40*************f63a
+      client-secret: a60d5a1**************************ea94
+      redirect-uri: http://oauth.xkcoding.com/demo/oauth/wechat_mp/callback
     WECHAT_ENTERPRISE:
       client-id: ww58**********6fbc
       client-secret: 8G6PCr0****************************yzaPc78
