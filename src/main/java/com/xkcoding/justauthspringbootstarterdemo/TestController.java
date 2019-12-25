@@ -1,6 +1,6 @@
 package com.xkcoding.justauthspringbootstarterdemo;
 
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.xkcoding.justauth.AuthRequestFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +48,7 @@ public class TestController {
     public AuthResponse login(@PathVariable String type, AuthCallback callback) {
         AuthRequest authRequest = factory.get(type);
         AuthResponse response = authRequest.login(callback);
-        log.info("【response】= {}", JSONUtil.toJsonStr(response));
+        log.info("【response】= {}", JSON.toJSONString(response));
         return response;
     }
 
