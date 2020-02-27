@@ -10,7 +10,7 @@
 
 ```xml
 <dependency>
-  <groupId>com.xkcoding</groupId>
+  <groupId>com.xkcoding.justauth</groupId>
   <artifactId>justauth-spring-boot-starter</artifactId>
   <version>1.3.2</version>
 </dependency>
