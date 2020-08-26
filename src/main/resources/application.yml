@@ -8,6 +8,11 @@ justauth:
         client-id: xxxxxx
         client-secret: xxxxxxxx
         redirect-uri: http://oauth.xkcoding.com/demo/oauth/test/callback
+      MYGITLAB:
+        request-class: com.xkcoding.justauthspringbootstarterdemo.extend.ExtendMyGitlabRequest
+        client-id: xxxxxx
+        client-secret: xxxxxxxx
+        redirect-uri: http://localhost:8443/oauth/mygitlab/callback
   type:
     GOOGLE:
       client-id: xxxxxx
